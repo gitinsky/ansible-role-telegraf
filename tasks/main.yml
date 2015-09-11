@@ -6,3 +6,16 @@
 - name: install Telegraf package
   apt: deb=/root/telegraf_0.1.8_amd64.deb
   when: ansible_os_family == "Debian"
+
+- name: mkdir /etc/telegraf
+  file: state=directory dest=/etc/telegraf
+
+- name: put Telegraf config
+  template: src=telegraf.conf dest=/etc/telegraf/telegraf.conf backup=yes
+
+- name: put Telegraf eye config
+  template: src=telegraf.rb dest=/etc/eye/telegraf.rb backup=yes
+
+- name: load config in eye
+  command: bash -c "source /usr/local/rvm/scripts/rvm && eye l /etc/eye/apps.eye"
+  sudo: yes
