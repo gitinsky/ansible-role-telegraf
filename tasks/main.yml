@@ -1,21 +1,25 @@
 ---
+- name: check if telegraf is already installed and get it's version
+  shell: telegraf --version
+  register: telegraf_installed_version
+  failed_when: no
+  changed_when: telegraf_installed_version.rc != 0
+
 - name: get Telegraf package
-  get_url: url=http://get.influxdb.org/telegraf/telegraf_0.1.8_amd64.deb dest=/root/telegraf_0.1.8_amd64.deb
-  when: ansible_os_family == "Debian"
+  get_url: url=http://get.influxdb.org/telegraf/telegraf_{{ telegraf_version }}_amd64.deb dest=/root/telegraf_{{ telegraf_version }}_amd64.deb
+  when: telegraf_installed_version.changed or telegraf_latest
 
 - name: install Telegraf package
-  apt: deb=/root/telegraf_0.1.8_amd64.deb
-  when: ansible_os_family == "Debian"
+  apt: deb=/root/telegraf_{{ telegraf_version }}_amd64.deb
+  when: telegraf_installed_version.changed or telegraf_latest
 
-- name: mkdir /etc/telegraf
-  file: state=directory dest=/etc/telegraf
+- name: clean up deb file
+  file: dest=/root/telegraf_{{ telegraf_version }}_amd64.deb state=absent
+  when: telegraf_installed_version.changed or telegraf_latest
 
 - name: put Telegraf config
   template: src=telegraf.conf dest=/etc/telegraf/telegraf.conf backup=yes
+  notify: restart telegraf
 
-- name: put Telegraf eye config
-  template: src=telegraf.rb dest=/etc/eye/telegraf.rb backup=yes
-
-- name: load config in eye
-  command: bash -c "source /usr/local/rvm/scripts/rvm && eye l /etc/eye/apps.eye"
-  sudo: yes
+- name: enable and start telegraf
+  service: name=telegraf state=restarted enabled=yes
