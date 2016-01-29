@@ -1,6 +1,5 @@
-telegraf_version: 0.10.1-1
-# Reinstall if there's a new version
-telegraf_latest: no
+telegraf_install_version: stable
+
 telegraf_ouptut_infulxdb: no
 
 telegraf_ouptut_graphite: yes

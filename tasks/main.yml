@@ -1,25 +1,36 @@
 ---
-- name: check if telegraf is already installed and get it's version
-  shell: telegraf --version
-  register: telegraf_installed_version
-  failed_when: no
-  changed_when: telegraf_installed_version.rc != 0
+- name: Install any necessary dependencies [Debian/Ubuntu]
+  apt: 
+    name: "{{ item }}" 
+    state: present 
+    update_cache: yes 
+    cache_valid_time: 3600
+  with_items:
+    - python-httplib2
+    - python-apt
+    - curl
+    - apt-transport-https
 
-- name: get Telegraf package
-  get_url: url=http://get.influxdb.org/telegraf/telegraf_{{ telegraf_version }}_amd64.deb dest=/root/telegraf_{{ telegraf_version }}_amd64.deb
-  when: telegraf_installed_version.changed or telegraf_latest
+- name: Import InfluxData GPG signing key [Debian/Ubuntu]
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
 
-- name: install Telegraf package
-  apt: deb=/root/telegraf_{{ telegraf_version }}_amd64.deb
-  when: telegraf_installed_version.changed or telegraf_latest
+- name: Add InfluxData repository [Debian/Ubuntu]
+  apt_repository:
+    repo: deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ telegraf_install_version }}
+    state: present
 
-- name: clean up deb file
-  file: dest=/root/telegraf_{{ telegraf_version }}_amd64.deb state=absent
-  when: telegraf_installed_version.changed or telegraf_latest
-
+- name: Install Telegraf packages [Debian/Ubuntu]
+  apt: 
+    name: telegraf
+    state: latest
+    update_cache: yes 
+    cache_valid_time: 3600
+  when: telegraf_install_url is not defined or telegraf_install_url == None
 - name: put Telegraf config
   template: src=telegraf.conf dest=/etc/telegraf/telegraf.conf backup=yes
   notify: restart telegraf
 
 - name: enable and start telegraf
-  service: name=telegraf state=restarted enabled=yes
+  service: name=telegraf state=started enabled=yes
