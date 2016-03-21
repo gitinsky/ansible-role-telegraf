@@ -2,7 +2,18 @@ telegraf_install_version: stable
 
 telegraf_ouptut_infulxdb: no
 
-telegraf_ouptut_graphite: yes
+telegraf_ouptut_prometheus: no
+
+telegraf_ouptut_graphite: no
 telegraf_ouptut_graphite_servers: ['localhost:2003']
 telegraf_ouptut_graphite_prefix: ""
 telegraf_hostname: ""
+
+telegraf_inputs_cpu: yes
+telegraf_inputs_disk: yes
+telegraf_inputs_diskio: yes
+telegraf_inputs_mem: yes
+telegraf_inputs_swap: yes
+telegraf_inputs_system: yes
+telegraf_inputs_netstat: yes
+telegraf_inputs_net: yes
