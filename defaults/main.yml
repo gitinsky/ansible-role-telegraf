@@ -17,3 +17,19 @@ telegraf_inputs_swap: yes
 telegraf_inputs_system: yes
 telegraf_inputs_netstat: yes
 telegraf_inputs_net: yes
+
+telegraf_inputs_aerospike: no
+telegraf_aerospike_servers: ["localhost:3000"]
+
+telegraf_inputs_statsd: no
+telegraf_inputs_statsd_service_address: ":8125"
+telegraf_inputs_statsd_delete_gauges: false
+telegraf_inputs_statsd_delete_counters: false
+telegraf_inputs_statsd_delete_sets: false
+telegraf_inputs_statsd_delete_timings: true
+telegraf_inputs_statsd_percentiles: [90]
+telegraf_inputs_statsd_convert_names: true
+telegraf_inputs_statsd_parse_data_dog_tags: false
+telegraf_inputs_statsd_allowed_pending_messages: 10000
+telegraf_inputs_statsd_percentile_limit: 1000
+telegraf_inputs_statsd_udp_packet_size: 1500
